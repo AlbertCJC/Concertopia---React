@@ -27,6 +27,11 @@ export function ConcertRoom({ username, avatar, room, onLeave }) {
     frame: 0,
     moving: false,
     direction: "down",
+    isJumping: false,
+    jumpStart: 0,
+    isHeadbanging: false,
+    headbangStart: 0,
+    buttonMove: null,
   });
 
   useEffect(() => {
@@ -103,13 +108,14 @@ export function ConcertRoom({ username, avatar, room, onLeave }) {
       ctx.fill();
 
       // Draw character image
-      if (img.complete) {
+      if (img.complete && img.naturalWidth > 0) {
         ctx.save();
         ctx.translate(s.x + 16, s.y + 18 - yOffset);
         ctx.rotate(rotation);
         ctx.drawImage(img, -32, -50, 64, 100);
         ctx.restore();
       } else {
+        // Fallback to pixel art if image is not loaded or failed
         drawPixelChar(ctx, s.x, s.y - yOffset, avatar?.gender || "boy", { colors: ["#3b82f6", "#fff", "#facc15"] }, s.direction, true, 0);
       }
       
