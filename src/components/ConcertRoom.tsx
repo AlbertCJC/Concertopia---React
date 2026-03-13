@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { drawVenue, drawPixelChar } from "../utils/canvas";
-import { TILE, MAP_W, MAP_H, BOY_AVATARS, GIRL_AVATARS } from "../constants";
+import { TILE, MAP_W, MAP_H } from "../constants";
 
 export function ConcertRoom({ username, avatar, room, onLeave }) {
   const canvasRef = useRef(null);
@@ -27,11 +27,6 @@ export function ConcertRoom({ username, avatar, room, onLeave }) {
     frame: 0,
     moving: false,
     direction: "down",
-    isJumping: false,
-    jumpStart: 0,
-    isHeadbanging: false,
-    headbangStart: 0,
-    buttonMove: null,
   });
 
   useEffect(() => {
@@ -45,13 +40,6 @@ export function ConcertRoom({ username, avatar, room, onLeave }) {
 
     const stageImg = new Image();
     stageImg.src = '/stage.png';
-
-    const crowdImages = [];
-    [...BOY_AVATARS, ...GIRL_AVATARS].forEach(av => {
-      const cImg = new Image();
-      cImg.src = av.image;
-      crowdImages.push(cImg);
-    });
 
     const loop = () => {
       const s = stateRef.current;
@@ -99,7 +87,7 @@ export function ConcertRoom({ username, avatar, room, onLeave }) {
       }
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      drawVenue(ctx, room.color, room.accent, 0, 0.5, s.x, s.y, username, avatar, stageImg, crowdImages);
+      drawVenue(ctx, room.color, room.accent, 0, 0.5, s.x, s.y, username, avatar, stageImg);
       
       // Draw shadow
       ctx.fillStyle = "rgba(0,0,0,0.3)";
@@ -108,14 +96,13 @@ export function ConcertRoom({ username, avatar, room, onLeave }) {
       ctx.fill();
 
       // Draw character image
-      if (img.complete && img.naturalWidth > 0) {
+      if (img.complete) {
         ctx.save();
         ctx.translate(s.x + 16, s.y + 18 - yOffset);
         ctx.rotate(rotation);
         ctx.drawImage(img, -32, -50, 64, 100);
         ctx.restore();
       } else {
-        // Fallback to pixel art if image is not loaded or failed
         drawPixelChar(ctx, s.x, s.y - yOffset, avatar?.gender || "boy", { colors: ["#3b82f6", "#fff", "#facc15"] }, s.direction, true, 0);
       }
       

@@ -89,7 +89,7 @@ export function drawPixelChar(ctx, x, y, gender, outfit, direction = "down", mov
   ctx.restore();
 }
 
-export function drawVenue(ctx, roomColor, accentColor, beat, beatIntensity, playerX, playerY, username, avatar, stageImg, crowdImages) {
+export function drawVenue(ctx, roomColor, accentColor, beat, beatIntensity, playerX, playerY, username, avatar, stageImg) {
   const W = MAP_W * TILE;
   const H = MAP_H * TILE;
   const t = Date.now();
@@ -131,11 +131,11 @@ export function drawVenue(ctx, roomColor, accentColor, beat, beatIntensity, play
   const stW = W - TILE * 10;
   const stH = TILE * 5.5;
 
-  if (stageImg && stageImg.complete && stageImg.naturalWidth > 0) {
+  if (stageImg && stageImg.complete) {
     // Draw the custom stage image without stretching
     const targetW = stW + TILE * 3;
     const targetH = stH + TILE * 1.5;
-    const imgRatio = stageImg.naturalWidth / stageImg.naturalHeight;
+    const imgRatio = stageImg.width / stageImg.height;
     const targetRatio = targetW / targetH;
     
     let drawW, drawH;
@@ -395,34 +395,18 @@ export function drawVenue(ctx, roomColor, accentColor, beat, beatIntensity, play
       const cx = row.xStart + ci * spacing + spacing * 0.5;
       const nBob = Math.round(Math.sin(t / 220 + seed * 0.7) * (1 + beatIntensity));
       
-      // NPC drawing using presets if available
-      if (crowdImages && crowdImages.length > 0) {
-        const crowdImg = crowdImages[spriteIdx % crowdImages.length];
-        if (crowdImg.complete && crowdImg.naturalWidth > 0) {
-          ctx.drawImage(crowdImg, cx - 16, row.y - 40 + nBob, 32, 50);
-        } else {
-          // Fallback if image not ready
-          const skin = ["#f5cba7","#c8956c","#d4a07a","#8d5524"][spriteIdx % 4];
-          const shirt = ["#e74c3c","#3b82f6","#4a7c59","#c084fc","#facc15","#ff6eb4"][spriteIdx % 6];
-          ctx.fillStyle = skin;
-          ctx.fillRect(cx - 3, row.y - 16 + nBob, 7, 7);
-          ctx.fillStyle = shirt;
-          ctx.fillRect(cx - 4, row.y - 9 + nBob, 9, 9);
-        }
-      } else {
-        // Fallback to simplified crowd drawing
-        const skin = ["#f5cba7","#c8956c","#d4a07a","#8d5524"][spriteIdx % 4];
-        const shirt = ["#e74c3c","#3b82f6","#4a7c59","#c084fc","#facc15","#ff6eb4"][spriteIdx % 6];
-        ctx.fillStyle = skin;
-        ctx.fillRect(cx - 3, row.y - 16 + nBob, 7, 7);
-        ctx.fillStyle = "#222";
-        ctx.fillRect(cx - 3, row.y - 18 + nBob, 7, 4);
-        ctx.fillStyle = shirt;
-        ctx.fillRect(cx - 4, row.y - 9 + nBob, 9, 9);
-        ctx.fillStyle = "#333";
-        ctx.fillRect(cx - 3, row.y + nBob, 3, 6);
-        ctx.fillRect(cx + 1, row.y + nBob, 3, 6);
-      }
+      // Simplified crowd drawing
+      const skin = ["#f5cba7","#c8956c","#d4a07a","#8d5524"][spriteIdx % 4];
+      const shirt = ["#e74c3c","#3b82f6","#4a7c59","#c084fc","#facc15","#ff6eb4"][spriteIdx % 6];
+      ctx.fillStyle = skin;
+      ctx.fillRect(cx - 3, row.y - 16 + nBob, 7, 7);
+      ctx.fillStyle = "#222";
+      ctx.fillRect(cx - 3, row.y - 18 + nBob, 7, 4);
+      ctx.fillStyle = shirt;
+      ctx.fillRect(cx - 4, row.y - 9 + nBob, 9, 9);
+      ctx.fillStyle = "#333";
+      ctx.fillRect(cx - 3, row.y + nBob, 3, 6);
+      ctx.fillRect(cx + 1, row.y + nBob, 3, 6);
     }
   });
 
@@ -436,10 +420,9 @@ export function drawVenue(ctx, roomColor, accentColor, beat, beatIntensity, play
 }
 
 function hexToRgb(hex) {
-  if (!hex || hex.length < 7) return "0,0,0";
-  const r = parseInt(hex.slice(1,3),16) || 0;
-  const g = parseInt(hex.slice(3,5),16) || 0;
-  const b = parseInt(hex.slice(5,7),16) || 0;
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
   return `${r},${g},${b}`;
 }
 
