@@ -1,0 +1,5 @@
+{
+  "name": "ConcerTopia",
+  "description": "A pixel-art concert simulator where users can create avatars and join virtual music rooms.",
+  "requestFramePermissions": []
+}
